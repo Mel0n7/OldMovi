@@ -49,4 +49,4 @@ async def kick(ctx,member:discord.Member,reason=None):
     except:
         await ctx.reply("An error ocurred. Try again later")
 client.run("OTQ4MDY5ODE2Njg0NjQyMzE0.Yh2c0g.ZkgmyGC8lNg_AODMctL86rTJJsc")
-# invite link - https://discord.com/api/oauth2/authorize?client_id=935764556003823667&permissions=2048&scope=bot%20applications.commands
+# invite link - https://discord.com/api/oauth2/authorize?client_id=948069816684642314&permissions=8&scope=bot
