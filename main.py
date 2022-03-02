@@ -13,6 +13,13 @@ async def on_ready():
     await client.change_presence(activity=activity)
     print("Bot Online")
 
+@client.event
+async def on_guild_channel_create(channel):
+    guild = channel.guild
+    role = discord.utils.get(guild.roles, name="Muted")
+    await channel.set_permissions(role, speak=False, send_messages=False)
+
+
 client.remove_command('help')
 @client.command(name="help")
 async def help(ctx):
