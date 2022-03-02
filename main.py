@@ -10,7 +10,7 @@ client = commands.Bot(command_prefix = '..')
 @client.event
 async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.listening, name="..help")
-    await client.change_presence(activity=activity) # Set Activity to "Listening to /status"
+    await client.change_presence(activity=activity)
     print("Bot Online")
 
 client.remove_command('help')
@@ -18,13 +18,16 @@ client.remove_command('help')
 async def help(ctx):
     embed=discord.Embed(title="Help")
     embed.add_field(name="..help", value="Open this!", inline=False)
-    embed.add_field(name="..mute {member} {reason}", value="Kick the member mentioned", inline=False)
+    embed.add_field(name="..mute {member} {reason}", value="Mute the member mentioned", inline=False)
+    embed.add_field(name="..unmute {member} {reason}", value="Umute the member mentioned", inline=False)
     embed.add_field(name="..kick {member} {reason}", value="Kick the member mentioned", inline=False)
     embed.add_field(name="..ban {member} {reason}", value="Ban the member mentioned", inline=False)
     embed.add_field(name="..unban {member}", value="Unban the member mentioned", inline=False)
     await ctx.reply(embed=embed)
+
+
 @client.command(name="mute")
-@commands.has_permissions(mute_members=True)
+@commands.has_permissions(manage_messages=True)
 async def mute(ctx,member:discord.Member):
     try:
         role = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -33,8 +36,10 @@ async def mute(ctx,member:discord.Member):
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
+
+
 @client.command(name="unmute")
-@commands.has_permissions(mute_members=True)
+@commands.has_permissions(manage_messages=True)
 async def unmute(ctx,member:discord.Member):
     try:
         role = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -43,6 +48,8 @@ async def unmute(ctx,member:discord.Member):
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
+
+
 @client.command(name="ban")
 @commands.has_permissions(ban_members=True)
 async def ban(ctx,member:discord.Member,reason=None):
@@ -52,6 +59,8 @@ async def ban(ctx,member:discord.Member,reason=None):
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
+
+
 @client.command(name="unban")
 @guild_only()
 @commands.has_permissions(ban_members=True)
@@ -69,6 +78,8 @@ async def unban(ctx,member):
                 await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
+
+
 @client.command(name="kick")
 @commands.has_permissions(kick_members=True)
 async def kick(ctx,member:discord.Member,reason=None):
@@ -78,5 +89,7 @@ async def kick(ctx,member:discord.Member,reason=None):
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
+
+        
 client.run("OTQ4MDY5ODE2Njg0NjQyMzE0.Yh2c0g.ZkgmyGC8lNg_AODMctL86rTJJsc")
 # invite link - https://discord.com/api/oauth2/authorize?client_id=948069816684642314&permissions=8&scope=bot
