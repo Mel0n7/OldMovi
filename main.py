@@ -18,8 +18,8 @@ client.remove_command('help')
 async def help(ctx):
     embed=discord.Embed(title="Help")
     embed.add_field(name="..help", value="Open this!", inline=False)
-    embed.add_field(name="..mute {member} {reason}", value="Mute the member mentioned", inline=False)
-    embed.add_field(name="..unmute {member} {reason}", value="Umute the member mentioned", inline=False)
+    embed.add_field(name="..mute {member}", value="Mute the member mentioned", inline=False)
+    embed.add_field(name="..unmute {member}", value="Umute the member mentioned", inline=False)
     embed.add_field(name="..kick {member} {reason}", value="Kick the member mentioned", inline=False)
     embed.add_field(name="..ban {member} {reason}", value="Ban the member mentioned", inline=False)
     embed.add_field(name="..unban {member}", value="Unban the member mentioned", inline=False)
@@ -28,11 +28,18 @@ async def help(ctx):
 
 @client.command(name="mute")
 @commands.has_permissions(manage_messages=True)
-async def mute(ctx,member:discord.Member):
+async def mute(ctx,member:discord.Member,reason=None):
     try:
-        role = discord.utils.get(ctx.guild.roles, name="Muted")
-        embed=discord.Embed(title=f"Muted {member}")
-        await member.add_roles(role)
+        guild = ctx.guild
+        role = discord.utils.get(guild.roles, name="Muted")
+
+        if not role:
+            role = await guild.create_role(name="Muted")
+            for channel in guild.channels:
+                await channel.set_permisions(role, speak=False, send_messages=False)
+
+        embed=discord.Embed(title=f"Unmuted {member}", description=reason)
+        await member.add_roles(role, reason=reason)
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
@@ -40,11 +47,18 @@ async def mute(ctx,member:discord.Member):
 
 @client.command(name="unmute")
 @commands.has_permissions(manage_messages=True)
-async def unmute(ctx,member:discord.Member):
+async def unmute(ctx,member:discord.Member,reason=None):
     try:
-        role = discord.utils.get(ctx.guild.roles, name="Muted")
-        embed=discord.Embed(title=f"Muted {member}")
-        await member.remove_roles(role)
+        guild = ctx.guild
+        role = discord.utils.get(guild.roles, name="Muted")
+
+        if not role:
+            role = await guild.create_role(name="Muted")
+            for channel in guild.channels:
+                await channel.set_permisions(role, speak=False, send_messages=False)
+
+        embed=discord.Embed(title=f"Unmuted {member}", description=reason)
+        await member.remove_roles(role, reason=reason)
         await ctx.reply(embed=embed)
     except:
         await ctx.reply("An error ocurred. Try again later")
