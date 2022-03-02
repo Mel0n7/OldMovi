@@ -38,7 +38,7 @@ async def mute(ctx,member:discord.Member,reason=None):
             for channel in guild.channels:
                 await channel.set_permisions(role, speak=False, send_messages=False)
 
-        embed=discord.Embed(title=f"Unmuted {member}", description=reason)
+        embed=discord.Embed(title=f"Muted {member.mention}", description=reason)
         await member.add_roles(role, reason=reason)
         await ctx.reply(embed=embed)
     except:
@@ -57,7 +57,7 @@ async def unmute(ctx,member:discord.Member,reason=None):
             for channel in guild.channels:
                 await channel.set_permisions(role, speak=False, send_messages=False)
 
-        embed=discord.Embed(title=f"Unmuted {member}", description=reason)
+        embed=discord.Embed(title=f"Unmuted {member.mention}", description=reason)
         await member.remove_roles(role, reason=reason)
         await ctx.reply(embed=embed)
     except:
@@ -68,7 +68,7 @@ async def unmute(ctx,member:discord.Member,reason=None):
 @commands.has_permissions(ban_members=True)
 async def ban(ctx,member:discord.Member,reason=None):
     try:
-        embed=discord.Embed(title=f"Banned {member}", description=reason)
+        embed=discord.Embed(title=f"Banned {member.mention}", description=reason)
         await member.ban(reason=reason)
         await ctx.reply(embed=embed)
     except:
@@ -98,7 +98,7 @@ async def unban(ctx,member):
 @commands.has_permissions(kick_members=True)
 async def kick(ctx,member:discord.Member,reason=None):
     try:
-        embed=discord.Embed(title=f"Kicked {member}", description=reason)
+        embed=discord.Embed(title=f"Kicked {member.mention}", description=reason)
         await member.ban(reason=reason)
         await ctx.reply(embed=embed)
     except:
