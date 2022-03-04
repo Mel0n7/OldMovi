@@ -149,16 +149,8 @@ class Economy(commands.Cog):
           return False
         else:
           json.dump(bank,bankW)
-          buttons = [
-            create_button(
-                style=ButtonStyle.green,
-                label="A Green Button"
-            ),
-          ]
-
-          action_row = create_actionrow(*buttons)
           embed=discord.Embed(title=f"Buy {item} for ${items[item]}")
-          await ctx.reply(embed=embed, components=[action_row])
+          await ctx.reply(embed=embed)
     else:
       ctx.reply("We dont sell that item")
 
