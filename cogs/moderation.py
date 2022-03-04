@@ -7,7 +7,7 @@ class Moderation(commands.Cog):
     self.client = client
 
     
-  @commands.event
+  @commands.Cog.listener()
   async def on_guild_channel_create(channel):
     guild = channel.guild
     role = discord.utils.get(guild.roles, name="Muted")
@@ -20,7 +20,7 @@ class Moderation(commands.Cog):
       await channel.set_permissions(role, speak=False, send_messages=False)
   
   
-  @commands.event
+  @commands.Cog.listener()
   async def on_guild_join(guild):
     role = discord.utils.get(guild.roles, name="Muted")
   

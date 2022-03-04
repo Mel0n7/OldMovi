@@ -6,12 +6,12 @@ class Economy(commands.Cog):
     self.client = client
 
   async def bankData(self):
-    bank = json.loads(open("./../bank.json","r").read())
+    bank = json.loads(open("./bank.json","r").read())
     return bank
   
   async def openAccount(self,user):
 
-    bank = self.bankData()
+    bank = await self.bankData()
     
     if str(user.id) in bank:
       return False
@@ -28,7 +28,7 @@ class Economy(commands.Cog):
     if not member:
       member = ctx.author
     await self.openAccount(ctx.author)
-    bank = self.bankData()
+    bank = await self.bankData()
     walletAmt = bank[str(member.id)]["wallet"]
     bankAmt = bank[str(member.id)]["bank"]
   
@@ -40,23 +40,49 @@ class Economy(commands.Cog):
   
   @commands.command(name="bet")
   async def bet(self,ctx,money:int):
+    if money == 0:
+      await ctx.reply("You cant bet 0 dollars")
+      return False
+    if not abs(money) == money:
+      await ctx.reply("You cant bet negative money :skull:")
+      return False
     if money > 2500:
       await ctx.reply("You can't bet more than 2500 dollars")
       return False
+    bank = await self.bankData()
+    if bank[str(ctx.author.id)]["wallet"] < money:
+      await ctx.reply(f"You dont even have {money} dollars")
+      return False
     win = random.randrange(2) == 1
-    bank = json.loads(open("./bank.json","r").read())
     if win:
       with open("./bank.json","w") as bankW:
-        bank[str(ctx.author.id)]["wallet"] += money
-        json.dump(bank,bankW)
-          
-      embed=discord.Embed(title="You Win!",description=f"You won ${money}",color=discord.Colour.green())
+        try:
+          bank[str(ctx.author.id)]["wallet"] += money
+        except:
+          await ctx.reply("An error occurred. Try again later")
+          return False
+        else:
+          json.dump(bank,bankW)
+      newMoney = bank[str(ctx.author.id)]["wallet"]
+      d = f"You won ${money}\nYour new balance is ${newMoney}"
+      embed=discord.Embed(title="You Win!",description=d,color=discord.Colour.green())
     else:
       with open("./bank.json","w") as bankW:
-        bank[str(ctx.author.id)]["wallet"] -= money
-        json.dump(bank,bankW)
-      embed=discord.Embed(title="You Lost",description=f"You lost ${money}",color=discord.Colour.red())
+        try:
+          bank[str(ctx.author.id)]["wallet"] -= money
+        except:
+          await ctx.reply("An error occurred. Try again later")
+          return False
+        else:
+          json.dump(bank,bankW)
+      newMoney = bank[str(ctx.author.id)]["wallet"]
+      d = f"You lost ${money}\nYour new balance is ${newMoney}"
+      embed=discord.Embed(title="You Lost",description=d,color=discord.Colour.red())
     await ctx.reply(embed=embed)
 
+
+    @commands.command(name="deposit")
+    async def deposit(self,ctx,money:int):
+      pass
 def setup(client):
     client.add_cog(Economy(client))
