@@ -135,7 +135,7 @@ class Economy(commands.Cog):
 
   @commands.command(name="buy")
   async def buy(self,ctx,item:str):
-    items = {"Cool Item":500}
+    items = {"my_item":500}
     bank = await self.bankData()
     if item in items:
       if bank[str(ctx.author.id)]["wallet"] < items[item]:
@@ -149,10 +149,21 @@ class Economy(commands.Cog):
           return False
         else:
           json.dump(bank,bankW)
-          embed=discord.Embed(title=f"Buy {item} for ${items[item]}")
+          with open("./inventory.json","w") as invW:
+            try:
+              inv = json.loads(open("./inventory.json","r").read())
+              if not str(ctx.author.id) in bank:
+                inv[str(ctx.author.id)] = []
+              inv[str(ctx.author.id)].append(item)
+            except:
+              await ctx.reply("An error occurred. Try again later")
+              return False
+            else:
+              json.dump(inv,invW)
+          embed=discord.Embed(title=f"Bought {item} for ${items[item]}")
           await ctx.reply(embed=embed)
     else:
-      ctx.reply("We dont sell that item")
+      await ctx.reply("We dont sell that item")
 
         
   @commands.command(name="daily")
