@@ -81,8 +81,20 @@ class Economy(commands.Cog):
     await ctx.reply(embed=embed)
 
 
-    @commands.command(name="deposit")
-    async def deposit(self,ctx,money:int):
-      pass
+  @commands.command(name="deposit")
+  async def deposit(self,ctx,money:int):
+    pass
+
+
+  @commands.command(name="daily")
+  @commands.cooldown(1, 86400, commands.BucketType.user)
+  async def daily(self,ctx):
+    bank = await self.bankData()
+    with open("./bank.json","w") as bankW:
+      bank[str(ctx.author.id)]["wallet"] += 10000
+      json.dump(bank,bankW)
+    newMoney = bank[str(ctx.author.id)]["wallet"]
+    embed=discord.Embed(title="Daily",description=f"You got $10000\nYour new balance is ${newMoney}",color=discord.Colour.green())
+    await ctx.reply(embed=embed)
 def setup(client):
     client.add_cog(Economy(client))
