@@ -5,12 +5,18 @@ class Economy(commands.Cog):
   def __init__(self, client):
     self.client = client
 
+  @commands.Cog.listener()
+  async def on_command_error(self, ctx, error):
+    if isinstance(error,commands.CommandOnCooldown):
+      embed=discord.Embed(title="On Cooldown",description=f"Please wait {int(error.retry_after)} seconds",color=discord.Colour.red())
+      await ctx.reply(embed=embed)
+      
   async def bankData(self):
     bank = json.loads(open("./bank.json","r").read())
     return bank
+
   
   async def openAccount(self,user):
-
     bank = await self.bankData()
     
     if str(user.id) in bank:
@@ -22,6 +28,7 @@ class Economy(commands.Cog):
   
       with open("./bank.json","w") as bankFile:
         json.dump(bank,bankFile)
+
   
   @commands.command(name="balance",aliases=["bal","money"])
   async def balance(self,ctx,member:discord.Member=None):
@@ -44,7 +51,7 @@ class Economy(commands.Cog):
       await ctx.reply("You cant bet 0 dollars")
       return False
     if not abs(money) == money:
-      await ctx.reply("You cant bet negative money :skull:")
+      await ctx.reply("You cant bet negative money")
       return False
     if money > 2500:
       await ctx.reply("You can't bet more than 2500 dollars")
@@ -83,9 +90,79 @@ class Economy(commands.Cog):
 
   @commands.command(name="deposit")
   async def deposit(self,ctx,money:int):
-    pass
+    bank = await self.bankData()
+    if money == 0:
+      await ctx.reply("You cant deposit 0 dollars")
+      return False
+    if not abs(money) == money:
+      await ctx.reply("You cant deposit negative money")
+      return False
+    if bank[str(ctx.author.id)]["wallet"] < money:
+      await ctx.reply(f"You dont even have {money} dollars")
+      return False
+    with open("./bank.json","w") as bankW:
+      try:
+        bank[str(ctx.author.id)]["wallet"] -= money
+        bank[str(ctx.author.id)]["bank"] += money
+      except:
+        await ctx.reply("An error occurred. Try again later")
+        return False
+      else:
+        json.dump(bank,bankW)
 
+        
+  @commands.command(name="withdraw")
+  async def withdraw(self,ctx,money:int):
+    bank = await self.bankData()
+    if money == 0:
+      await ctx.reply("You cant withdraw 0 dollars")
+      return False
+    if not abs(money) == money:
+      await ctx.reply("You cant withdraw negative money")
+      return False
+    if bank[str(ctx.author.id)]["bank"] < money:
+      await ctx.reply(f"You dont even have {money} dollars")
+      return False
+    with open("./bank.json","w") as bankW:
+      try:
+        bank[str(ctx.author.id)]["wallet"] += money
+        bank[str(ctx.author.id)]["bank"] -= money
+      except:
+        await ctx.reply("An error occurred. Try again later")
+        return False
+      else:
+        json.dump(bank,bankW)
 
+  @commands.command(name="buy")
+  async def buy(self,ctx,item:str):
+    items = {"Cool Item":500}
+    bank = await self.bankData()
+    if item in items:
+      if bank[str(ctx.author.id)]["wallet"] < items[item]:
+        await ctx.reply(f"You dont even have {items[item]} dollars")
+        return False
+      with open("./bank.json","w") as bankW:
+        try:
+          bank[str(ctx.author.id)]["wallet"] -= items[item]
+        except:
+          await ctx.reply("An error occurred. Try again later")
+          return False
+        else:
+          json.dump(bank,bankW)
+          buttons = [
+            create_button(
+                style=ButtonStyle.green,
+                label="A Green Button"
+            ),
+          ]
+
+          action_row = create_actionrow(*buttons)
+          embed=discord.Embed(title=f"Buy {item} for ${items[item]}")
+          await ctx.reply(embed=embed, components=[action_row])
+    else:
+      ctx.reply("We dont sell that item")
+
+        
   @commands.command(name="daily")
   @commands.cooldown(1, 86400, commands.BucketType.user)
   async def daily(self,ctx):
