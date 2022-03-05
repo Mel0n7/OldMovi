@@ -1,11 +1,20 @@
-import discord, os, discord.ext
+import discord, os, discord.ext, json
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
 client = discord.Client()
 
-client = commands.Bot(command_prefix = '..')
+async def getPrefix(client,message):
+  with open("./prefix.json","r") as f:
+    prefixes = json.loads(f.read())
+  try:
+    return prefixes[str(message.guild.id)]
+  except:
+    await setPrefix(message, "..")
+    return ".."
+
+client = commands.Bot(command_prefix = getPrefix)
 
 @client.event
 async def on_ready():
@@ -13,6 +22,10 @@ async def on_ready():
   await client.change_presence(activity=activity)
   print("Bot Online")
 
+
+@client.event
+async def on_guild_join(ctx):
+  await setPrefix(ctx, "..")
 
 client.remove_command('help')
 @client.command(name="help",aliases=["?"])
@@ -41,8 +54,21 @@ async def colour(ctx,colour):
   embed.set_thumbnail(url=url)
   embed.add_field(name="Hex", value=hexColour[2:], inline=True)
   embed.add_field(name="RGB", value=rbgColour, inline=True)
-  await ctx.send(embed=embed)
+  await ctx.reply(embed=embed)
 
+async def setPrefix(ctx,prefix):
+  with open("./prefix.json","r") as f:
+    prefixes = json.loads(f.read())
+  prefixes[str(ctx.guild.id)] = prefix
+  with open("./prefix.json","w") as f:
+    json.dump(prefixes,f)
+
+    
+@client.command(name="prefix")
+async def prefix(ctx,prefix:str):
+  await setPrefix(ctx,prefix)
+  await ctx.reply(f"Set prefix to {prefix}")
+  
 
 client.load_extension("cogs.moderation") # Imports ./cogs/moderation.py
 client.load_extension("cogs.economy") # Imports ./cogs/economy.py
