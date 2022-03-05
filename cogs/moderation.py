@@ -118,7 +118,7 @@ class Moderation(commands.Cog):
 
   
   @commands.command(name="deafen")
-  @commands.has_permissions(deafen_members=True)
+  @commands.has_permissions(administrator=True)
   async def deafen(self,ctx,member:discord.Member,reason=None):
       try:
           embed=discord.Embed(title=f"Deafened {member.mention}", description=reason)
@@ -129,7 +129,7 @@ class Moderation(commands.Cog):
 
 
   @commands.command(name="undeafen")
-  @commands.has_permissions(deafen_members=True)
+  @commands.has_permissions(administrator=True)
   async def undeafen(self,ctx,member:discord.Member,reason=None):
       try:
           embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason)
