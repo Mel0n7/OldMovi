@@ -40,7 +40,7 @@ class Moderation(commands.Cog):
         
   @commands.command(name="mute")
   @commands.has_permissions(manage_messages=True)
-  async def mute(self,ctx,member:discord.Member,reason=None):
+  async def mute(self,ctx,member:discord.Member,*,reason=None):
       try:
           guild = ctx.guild
           role = discord.utils.get(guild.roles, name="Muted")
@@ -59,7 +59,7 @@ class Moderation(commands.Cog):
   
   @commands.command(name="unmute")
   @commands.has_permissions(manage_messages=True)
-  async def unmute(self,ctx,member:discord.Member,reason=None):
+  async def unmute(self,ctx,member:discord.Member,*,reason=None):
       try:
           guild = ctx.guild
           role = discord.utils.get(guild.roles, name="Muted")
@@ -78,7 +78,7 @@ class Moderation(commands.Cog):
   
   @commands.command(name="ban")
   @commands.has_permissions(ban_members=True)
-  async def ban(self,ctx,member:discord.Member,reason=None):
+  async def ban(self,ctx,member:discord.Member,*,reason=None):
       try:
           embed=discord.Embed(title=f"Banned {member.mention}", description=reason, color=discord.Colour.red())
           await member.ban(reason=reason)
@@ -90,7 +90,7 @@ class Moderation(commands.Cog):
   @commands.command(name="unban",aliases=["revokeban"])
   @guild_only()
   @commands.has_permissions(ban_members=True)
-  async def unban(self,ctx,member,reason=None):
+  async def unban(self,ctx,member,*,reason=None):
       try:   
           banned_users = await ctx.guild.bans()
   	
@@ -108,7 +108,7 @@ class Moderation(commands.Cog):
   
   @commands.command(name="kick")
   @commands.has_permissions(kick_members=True)
-  async def kick(self,ctx,member:discord.Member,reason=None):
+  async def kick(self,ctx,member:discord.Member,*,reason=None):
       try:
           embed=discord.Embed(title=f"Kicked {member.mention}", description=reason, color=discord.Colour.gold())
           await member.ban(reason=reason)
@@ -119,7 +119,7 @@ class Moderation(commands.Cog):
   
   @commands.command(name="deafen")
   @commands.has_permissions(administrator=True)
-  async def deafen(self,ctx,member:discord.Member,reason=None):
+  async def deafen(self,ctx,member:discord.Member,*,reason=None):
       try:
           embed=discord.Embed(title=f"Deafened {member.mention}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=True)
@@ -130,7 +130,7 @@ class Moderation(commands.Cog):
 
   @commands.command(name="undeafen")
   @commands.has_permissions(administrator=True)
-  async def undeafen(self,ctx,member:discord.Member,reason=None):
+  async def undeafen(self,ctx,member:discord.Member,*,reason=None):
       try:
           embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=False)
