@@ -50,7 +50,7 @@ class Moderation(commands.Cog):
               for channel in guild.channels:
                   await channel.set_permisions(role, speak=False, send_messages=False)
   
-          embed=discord.Embed(title=f"Muted {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Muted {member.mention}", description=reason, color=discord.Colour.gold())
           await member.add_roles(role, reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -69,7 +69,7 @@ class Moderation(commands.Cog):
               for channel in guild.channels:
                   await channel.set_permisions(role, speak=False, send_messages=False)
   
-          embed=discord.Embed(title=f"Unmuted {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Unmuted {member.mention}", description=reason, color=discord.Colour.gold())
           await member.remove_roles(role, reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -80,7 +80,7 @@ class Moderation(commands.Cog):
   @commands.has_permissions(ban_members=True)
   async def ban(self,ctx,member:discord.Member,reason=None):
       try:
-          embed=discord.Embed(title=f"Banned {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Banned {member.mention}", description=reason, color=discord.Colour.red())
           await member.ban(reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -99,7 +99,7 @@ class Moderation(commands.Cog):
               user = ban_entry.user
               
               if (user.name, user.discriminator) == (member_name, member_discriminator):
-                  embed=discord.Embed(title=f"Unbanned {user.mention}", description=reason)
+                  embed=discord.Embed(title=f"Unbanned {user.mention}", description=reason, color=discord.Colour.red())
                   await ctx.guild.unban(user)
                   await ctx.reply(embed=embed)
       except:
@@ -110,7 +110,7 @@ class Moderation(commands.Cog):
   @commands.has_permissions(kick_members=True)
   async def kick(self,ctx,member:discord.Member,reason=None):
       try:
-          embed=discord.Embed(title=f"Kicked {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Kicked {member.mention}", description=reason, color=discord.Colour.gold())
           await member.ban(reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -121,7 +121,7 @@ class Moderation(commands.Cog):
   @commands.has_permissions(administrator=True)
   async def deafen(self,ctx,member:discord.Member,reason=None):
       try:
-          embed=discord.Embed(title=f"Deafened {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Deafened {member.mention}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=True)
           await ctx.reply(embed=embed)
       except:
@@ -132,7 +132,7 @@ class Moderation(commands.Cog):
   @commands.has_permissions(administrator=True)
   async def undeafen(self,ctx,member:discord.Member,reason=None):
       try:
-          embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason)
+          embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=False)
           await ctx.reply(embed=embed)
       except:
