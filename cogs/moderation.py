@@ -6,6 +6,14 @@ class Moderation(commands.Cog):
   def __init__(self, client):
     self.client = client
 
+  @commands.Cog.listener()
+  async def on_command_error(self, ctx, error):
+    if isinstance(error,commands.BotMissingPermissions):
+      textPerms = "I need these permissions:"
+      for perm in error.missing_perms:
+        textPerms = f"{textPerms}\n{perm}"
+      embed=discord.Embed(title="I dont have permission to do that",description=textPerms,color=discord.Colour.red())
+      await ctx.reply(embed=embed)
     
   @commands.Cog.listener()
   async def on_guild_channel_create(channel):
@@ -82,7 +90,7 @@ class Moderation(commands.Cog):
   @commands.command(name="unban",aliases=["revokeban"])
   @guild_only()
   @commands.has_permissions(ban_members=True)
-  async def unban(self,ctx,member):
+  async def unban(self,ctx,member,reason=None):
       try:   
           banned_users = await ctx.guild.bans()
   	
@@ -91,7 +99,7 @@ class Moderation(commands.Cog):
               user = ban_entry.user
               
               if (user.name, user.discriminator) == (member_name, member_discriminator):
-                  embed=discord.Embed(title=f"Unbanned {user.mention}")
+                  embed=discord.Embed(title=f"Unbanned {user.mention}", description=reason)
                   await ctx.guild.unban(user)
                   await ctx.reply(embed=embed)
       except:
@@ -104,6 +112,28 @@ class Moderation(commands.Cog):
       try:
           embed=discord.Embed(title=f"Kicked {member.mention}", description=reason)
           await member.ban(reason=reason)
+          await ctx.reply(embed=embed)
+      except:
+          await ctx.reply("An error occurred. Try again later")
+
+  
+  @commands.command(name="deafen")
+  @commands.has_permissions(deafen_members=True)
+  async def deafen(self,ctx,member:discord.Member,reason=None):
+      try:
+          embed=discord.Embed(title=f"Deafened {member.mention}", description=reason)
+          await member.edit(deafen=True)
+          await ctx.reply(embed=embed)
+      except:
+          await ctx.reply("An error occurred. Try again later")
+
+
+  @commands.command(name="undeafen")
+  @commands.has_permissions(deafen_members=True)
+  async def undeafen(self,ctx,member:discord.Member,reason=None):
+      try:
+          embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason)
+          await member.edit(deafen=False)
           await ctx.reply(embed=embed)
       except:
           await ctx.reply("An error occurred. Try again later")
