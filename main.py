@@ -27,6 +27,12 @@ async def on_ready():
 async def on_guild_join(ctx):
   await setPrefix(ctx, "..")
 
+
+@client.event
+async def on_command_error(ctx, error):
+  print(error)
+
+
 client.remove_command('help')
 @client.command(name="help",aliases=["?"])
 async def help(ctx):
