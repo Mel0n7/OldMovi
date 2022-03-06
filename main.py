@@ -59,7 +59,7 @@ async def help(ctx):
 @client.command(name="colour",aliases=["color"])
 async def colour(ctx,colour):
   hexColour = hex(int(colour,16))
-  rbgColour = tuple(int(hexColour[2:][i:i+2], 16) for i in (0, 2, 4))
+  rbgColour = str(tuple(int(hexColour[2:][i:i+2], 16) for i in (0, 2, 4))).strip("(").strip(")")
   url=f"https://serux.pro/rendercolour?hex={colour}&height=100&width=225"
   embed=discord.Embed(title=hexColour[2:],colour=int(hexColour,16))
   embed.set_thumbnail(url=url)

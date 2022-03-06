@@ -31,7 +31,7 @@ class Economy(commands.Cog):
 
   
   @commands.command(name="balance",aliases=["bal","money"])
-  async def balance(self,ctx,member:discord.MemberConverter=None):
+  async def balance(self,ctx,member:commands.MemberConverter=None):
     if not member:
       member = ctx.author
     await self.openAccount(ctx.author)
