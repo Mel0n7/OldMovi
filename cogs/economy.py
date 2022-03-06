@@ -31,7 +31,7 @@ class Economy(commands.Cog):
 
   
   @commands.command(name="balance",aliases=["bal","money"])
-  async def balance(self,ctx,member:discord.Member=None):
+  async def balance(self,ctx,member:discord.MemberConverter=None):
     if not member:
       member = ctx.author
     await self.openAccount(ctx.author)
@@ -109,6 +109,12 @@ class Economy(commands.Cog):
         return False
       else:
         json.dump(bank,bankW)
+    with open("./prefix.json","r") as f:
+      prefixes = json.loads(f.read())
+      prefix = prefixes[str(ctx.guild.id)]
+
+    embed=discord.Embed(title=f"Deposited ${money}",description=f"Do {prefix}bal to see your new balance")
+    ctx.reply(embed=embed)
 
         
   @commands.command(name="withdraw")
@@ -132,6 +138,12 @@ class Economy(commands.Cog):
         return False
       else:
         json.dump(bank,bankW)
+    with open("./prefix.json","r") as f:
+      prefixes = json.loads(f.read())
+      prefix = prefixes[str(ctx.guild.id)]
+
+      embed=discord.Embed(title=f"Withdrawn ${money}",description=f"Do {prefix}bal to see your new balance")
+      ctx.reply(embed=embed)
 
   @commands.command(name="buy")
   async def buy(self,ctx,item:str):

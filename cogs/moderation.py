@@ -16,7 +16,7 @@ class Moderation(commands.Cog):
       await ctx.reply(embed=embed)
     
   @commands.Cog.listener()
-  async def on_guild_channel_create(channel):
+  async def on_guild_channel_create(self,channel):
     guild = channel.guild
     role = discord.utils.get(guild.roles, name="Muted")
   
@@ -29,7 +29,7 @@ class Moderation(commands.Cog):
   
   
   @commands.Cog.listener()
-  async def on_guild_join(guild):
+  async def on_guild_join(self,guild):
     role = discord.utils.get(guild.roles, name="Muted")
   
     if not role:
@@ -40,7 +40,7 @@ class Moderation(commands.Cog):
         
   @commands.command(name="mute")
   @commands.has_permissions(manage_messages=True)
-  async def mute(self,ctx,member:discord.Member,*,reason=None):
+  async def mute(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
           guild = ctx.guild
           role = discord.utils.get(guild.roles, name="Muted")
@@ -50,7 +50,7 @@ class Moderation(commands.Cog):
               for channel in guild.channels:
                   await channel.set_permisions(role, speak=False, send_messages=False)
   
-          embed=discord.Embed(title=f"Muted {member.mention}", description=reason, color=discord.Colour.gold())
+          embed=discord.Embed(title=f"Muted {member}", description=reason, color=discord.Colour.gold())
           await member.add_roles(role, reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -59,7 +59,7 @@ class Moderation(commands.Cog):
   
   @commands.command(name="unmute")
   @commands.has_permissions(manage_messages=True)
-  async def unmute(self,ctx,member:discord.Member,*,reason=None):
+  async def unmute(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
           guild = ctx.guild
           role = discord.utils.get(guild.roles, name="Muted")
@@ -69,7 +69,7 @@ class Moderation(commands.Cog):
               for channel in guild.channels:
                   await channel.set_permisions(role, speak=False, send_messages=False)
   
-          embed=discord.Embed(title=f"Unmuted {member.mention}", description=reason, color=discord.Colour.gold())
+          embed=discord.Embed(title=f"Unmuted {member}", description=reason, color=discord.Colour.gold())
           await member.remove_roles(role, reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -78,9 +78,9 @@ class Moderation(commands.Cog):
   
   @commands.command(name="ban")
   @commands.has_permissions(ban_members=True)
-  async def ban(self,ctx,member:discord.Member,*,reason=None):
+  async def ban(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
-          embed=discord.Embed(title=f"Banned {member.mention}", description=reason, color=discord.Colour.red())
+          embed=discord.Embed(title=f"Banned {member}", description=reason, color=discord.Colour.red())
           await member.ban(reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -99,7 +99,7 @@ class Moderation(commands.Cog):
               user = ban_entry.user
               
               if (user.name, user.discriminator) == (member_name, member_discriminator):
-                  embed=discord.Embed(title=f"Unbanned {user.mention}", description=reason, color=discord.Colour.red())
+                  embed=discord.Embed(title=f"Unbanned {member}", description=reason, color=discord.Colour.red())
                   await ctx.guild.unban(user)
                   await ctx.reply(embed=embed)
       except:
@@ -108,9 +108,9 @@ class Moderation(commands.Cog):
   
   @commands.command(name="kick")
   @commands.has_permissions(kick_members=True)
-  async def kick(self,ctx,member:discord.Member,*,reason=None):
+  async def kick(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
-          embed=discord.Embed(title=f"Kicked {member.mention}", description=reason, color=discord.Colour.gold())
+          embed=discord.Embed(title=f"Kicked {member}", description=reason, color=discord.Colour.gold())
           await member.ban(reason=reason)
           await ctx.reply(embed=embed)
       except:
@@ -119,9 +119,9 @@ class Moderation(commands.Cog):
   
   @commands.command(name="deafen")
   @commands.has_permissions(administrator=True)
-  async def deafen(self,ctx,member:discord.Member,*,reason=None):
+  async def deafen(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
-          embed=discord.Embed(title=f"Deafened {member.mention}", description=reason, color=discord.Colour.gold())
+          embed=discord.Embed(title=f"Deafened {member}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=True)
           await ctx.reply(embed=embed)
       except:
@@ -130,14 +130,37 @@ class Moderation(commands.Cog):
 
   @commands.command(name="undeafen")
   @commands.has_permissions(administrator=True)
-  async def undeafen(self,ctx,member:discord.Member,*,reason=None):
+  async def undeafen(self,ctx,member:commands.MemberConverter,*,reason=None):
       try:
-          embed=discord.Embed(title=f"Undeafened {member.mention}", description=reason, color=discord.Colour.gold())
+          embed=discord.Embed(title=f"Undeafened {member}", description=reason, color=discord.Colour.gold())
           await member.edit(deafen=False)
           await ctx.reply(embed=embed)
       except:
           await ctx.reply("An error occurred. Try again later")
 
+  
+  @commands.command(name="slowmode",aliases=["sm","chatdelay"])
+  @commands.has_permissions(administrator=True)
+  async def slowmode(self,ctx,time:int,channel:commands.TextChannelConverter=None):
+      try:
+          if not channel:
+            channel = ctx.channel
+          embed=discord.Embed(title=f"Set slowmode to {time}s", description=f"Set slowmode for #{channel.name} to {time}s", color=discord.Colour.green())
+          await channel.edit(slowmode_delay=time)
+          await ctx.reply(embed=embed)
+      except:
+          await ctx.reply("An error occurred. Try again later")
+
+  
+  @commands.command(name="nickname",aliases=["nn","nick"])
+  @commands.has_permissions(administrator=True)
+  async def nickname(self,ctx,member:commands.MemberConverter,*,name:str):
+      try:
+          embed=discord.Embed(title=f"Set {member}'s name to {name}", color=discord.Colour.green())
+          await member.edit(nick=name)
+          await ctx.reply(embed=embed)
+      except:
+          await ctx.reply("An error occurred. Try again later")
 
 def setup(client):
     client.add_cog(Moderation(client))
