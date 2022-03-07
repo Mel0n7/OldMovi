@@ -114,7 +114,7 @@ class Economy(commands.Cog):
       prefix = prefixes[str(ctx.guild.id)]
 
     embed=discord.Embed(title=f"Deposited ${money}",description=f"Do {prefix}bal to see your new balance")
-    ctx.reply(embed=embed)
+    await ctx.reply(embed=embed)
 
         
   @commands.command(name="withdraw")
@@ -143,7 +143,7 @@ class Economy(commands.Cog):
       prefix = prefixes[str(ctx.guild.id)]
 
       embed=discord.Embed(title=f"Withdrawn ${money}",description=f"Do {prefix}bal to see your new balance")
-      ctx.reply(embed=embed)
+      await ctx.reply(embed=embed)
 
   @commands.command(name="buy")
   async def buy(self,ctx,item:str):
