@@ -82,51 +82,6 @@ async def prefix(ctx,prefix:str):
   await ctx.reply(f"Set prefix to {prefix}")
   
 
-@tasks.loop(minutes=1)
-async def checkSubscribed():
-  subscribed = json.loads(open("./subscribed.json","r").read())
-  ytToken = os.environ["ytKey"]
-  for sub in subscribed:
-    id = sub["id"]
-    url = f"https://www.googleapis.com/youtube/v3/search?key={ytToken}&channelId={id}&part=snippet,id&order=date&maxResults=1"
-    channel = requests.get(url).json()
-    lastVid = channel["items"][0]
-    lastVidID = lastVid["id"]["videoID"]
-    lastKnownVid = sub["lastVid"]
-    if not lastVidID == lastKnownVid:
-      title = lastVid["snippet"]["title"]
-      description = lastVid["snippet"]["description"]
-      channelName = description = lastVid["snippet"]["channelTitle"]
-      channelID = description = lastVid["snippet"]["channelId"]
-      channelURL = f"https://www.youtube.com/channel/{channelID}"
-      vidURL = f"https://www.youtube.com/watch?v={lastVidID}"
-      channelImage = requests.get(f"https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails&id={channelID}&key={ytToken}").json()["items"]["snippet"]["thumbnails"]["default"]
-      embed=discord.Embed(title=title, url=vidURL, description=description)
-      embed.set_author(name=channelName, url=channelURL, icon_url=channelImage)
-      guild = client.get_guild(sub["guild"])
-      channel = guild.text_channels[sub["channel"]]
-      await channel.send(embed=embed)    
-      subscribed[f"{guild}#{id}"] = {"id":id,"guild":guild.id,"channel":channel.id,"lastVid":lastVidID}
-      with open("./subscribed.json","w") as subW:
-        json.dump(subscribed,subW)
-
-
-@client.command(name="subscribe",aliases=["sub"])
-async def subscribe(ctx,id:str):
-  ytToken = os.environ["ytKey"]
-  channel = requests.get(f"https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails&id={id}&key={ytToken}").json()
-  channelName = channel["items"]["snippet"]["title"]
-  channelImage = channel["items"]["snippet"]["thumbnails"]["medium"]
-  with json.loads(open("./subscribed.json","r").read()) as subs:
-    name = f"{ctx.guild.id}#{id}"
-    subs[name] = {"id":id,"guild":ctx.guild.id,"channel":ctx.channel.id,"lastVid":""}
-    with open("./subscribed.json","w") as subW:
-      json.dump(subs,subW)
-  embed=discord.Embed(title=f"Subscribed to {channelName}")
-  embed.set_thumbnail(url=channelImage)
-  await ctx.send(embed=embed)
-  
-
 client.load_extension("cogs.moderation") # Imports ./cogs/moderation.py
 client.load_extension("cogs.economy") # Imports ./cogs/economy.py
 
