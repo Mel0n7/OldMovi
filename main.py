@@ -21,7 +21,6 @@ async def on_ready():
   activity = discord.Activity(type=discord.ActivityType.listening, name="..help")
   await client.change_presence(activity=activity)
   print("Bot Online")
-  checkSubscribed.start()
 
 
 @client.event
